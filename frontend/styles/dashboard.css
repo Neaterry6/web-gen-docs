@@ -1,0 +1,22 @@
+.dashboard-container {
+    padding: 40px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.dashboard-container h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.api-key-list {
+    list-style: none;
+    padding: 0;
+}
+
+.api-key-list li {
+    padding: 10px;
+    background: #f4f4f4;
+    margin: 5px 0;
+    border-radius: 5px;
