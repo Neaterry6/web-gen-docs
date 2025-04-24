@@ -1,32 +1,32 @@
 import { useEffect, useState } from "react";
+import "./adminDashboard.css";
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [apiKeys, setApiKeys] = useState([]);
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
-        const fetchData = async () => {
-            const token = localStorage.getItem("token");
-
-            // Fetch users
-            const userRes = await fetch("http://localhost:5000/api/admin/users", {
+        const fetchAdminData = async () => {
+            const userResponse = await fetch("http://localhost:5000/api/admin/users", {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setUsers(await userRes.json());
-
-            // Fetch API keys
-            const keyRes = await fetch("http://localhost:5000/api/admin/keys", {
+            const keyResponse = await fetch("http://localhost:5000/api/admin/apikeys", {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setApiKeys(await keyRes.json());
+
+            const userData = await userResponse.json();
+            const keyData = await keyResponse.json();
+
+            setUsers(userData);
+            setApiKeys(keyData);
         };
 
-        fetchData();
+        fetchAdminData();
     }, []);
 
     const deleteUser = async (id) => {
-        const token = localStorage.getItem("token");
-        await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+        await fetch(`http://localhost:5000/api/admin/delete/${id}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` }
         });
@@ -34,23 +34,27 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div>
+        <div className="admin-container">
             <h2>Admin Dashboard</h2>
-            
-            <h3>Users</h3>
-            {users.map(user => (
-                <div key={user._id}>
-                    <p>{user.username} - {user.email}</p>
-                    <button onClick={() => deleteUser(user._id)}>Delete</button>
-                </div>
-            ))}
 
-            <h3>API Keys</h3>
-            {apiKeys.map(key => (
-                <p key={key._id}>{key.key} - {key.active ? "Active" : "Inactive"}</p>
-            ))}
+            <h3>Manage Users</h3>
+            <ul>
+                {users.map(user => (
+                    <li key={user._id}>
+                        {user.username} ({user.email}) 
+                        <button onClick={() => deleteUser(user._id)}>Delete</button>
+                    </li>
+                ))}
+            </ul>
+
+            <h3>API Keys Overview</h3>
+            <ul>
+                {apiKeys.map(apiKey => (
+                    <li key={apiKey._id}>{apiKey.key} - User: {apiKey.userId}</li>
+                ))}
+            </ul>
         </div>
     );
 };
 
-export default AdminDashboard
+export default AdminDashboard;
